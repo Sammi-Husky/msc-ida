@@ -62,7 +62,7 @@ class MSCSBProcessor(processor_t):
     def __init__(self):
         processor_t.__init__(self)
         self._init_instructions()
-        self._init_registers()    
+        self._init_registers()
 
     def _init_instructions(self):
         class insr:
@@ -72,7 +72,7 @@ class MSCSBProcessor(processor_t):
                 self.d = d
                 self.cmt = cmt
 
-        
+
         self.itable = {
             0x00: insr(name="nop",                     cf=None,                 d=self.decode_no_ops,           cmt= None),
             0x02: insr(name="BeginSub",                cf=CF_USE2,              d=self.decode_begin,            cmt= None),
@@ -151,11 +151,11 @@ class MSCSBProcessor(processor_t):
             0x4c: insr(name="unk_4c",                  cf=None,                 d=None,                         cmt= None),
             0x4d: insr(name="exit",                    cf=None,                 d=None,                         cmt= None)
         }
-        
+
         # Now create an instruction table compatible with IDA processor module requirements
         for i in xrange(0, 6):
             self.cmd[i].type = o_void
-            
+
         Instructions = []
         i = 0
         for x in self.itable.values():
@@ -173,7 +173,7 @@ class MSCSBProcessor(processor_t):
         self.instruc = Instructions
 
     def _init_registers(self):
-    
+
         self.regNames = [
         "GV0","GV1","GV2","GV3","GV4","GV5",
         "GV6","GV7","GV8","GV9","GV10","GV11",
@@ -186,7 +186,7 @@ class MSCSBProcessor(processor_t):
         "GV48","GV49","GV50","GV51","GV52","GV53",
         "GV54","GV55","GV56","GV57","GV58","GV59",
         "GV60","GV61",
-        
+
         # Fake seg registes
         "CS", "DS"
         ]
@@ -198,7 +198,7 @@ class MSCSBProcessor(processor_t):
         self.regLastSreg  = self.ireg_DS
         self.regCodeSreg = self.ireg_CS
         self.regDataSreg = self.ireg_DS
- 
+
     #----------------------------------------------------------------#
     #---------------- Opcode Decoders -------------------------------#
     #----------------------------------------------------------------#
@@ -207,13 +207,13 @@ class MSCSBProcessor(processor_t):
         byte = get_byte(ea)
         self.cmd.size += 1
         return byte
-        
+
     def _read_cmd_word(self):
         ea = self.cmd.ea + self.cmd.size
         word = get_word(ea)
         self.cmd.size += 2
         return word
-        
+
     def _read_cmd_dword(self):
         ea = self.cmd.ea + self.cmd.size
         dword = get_long(ea)
@@ -234,13 +234,13 @@ class MSCSBProcessor(processor_t):
         self.cmd[1].dtyp = dt_word
         self.cmd[1].value = self._read_cmd_word()
         return True
-        
+
     def decode_jump(self, opcode):
         self.cmd[0].type = o_near
         self.cmd[0].dtyp = dt_word
-        self.cmd[0].addr = self._read_cmd_dword() - 0x10 
+        self.cmd[0].addr = self._read_cmd_dword() - 0x10
         return True
-        
+
     def decode_push(self, opcode):
         if opcode == 0x0A:
             self.cmd[0].type = o_imm
@@ -253,11 +253,11 @@ class MSCSBProcessor(processor_t):
             self.cmd[0].dtyp = dt_word
             self.cmd[0].value = self._read_cmd_word()
         return True
-        
+
     def decode_set(self, opcode):
         self.decode_reg(opcode)
         return True
-        
+
     def decode_reg(self, opcode):
         regType = self._read_cmd_byte()
         if regType == 1:
@@ -269,40 +269,40 @@ class MSCSBProcessor(processor_t):
             self.cmd[0].dtyp = dt_3byte
             self.cmd[0].value = self._read_cmd_word()
         return True
-    
+
     def cmt_printf(self):
         seg = get_segm_by_name("DATA")
-        
+
         '''
             Loader abuses segment orgbase and sets it to string chunk size
         '''
         chunkSize= seg.orgbase
         index = cmd[5].value
         return GetString(seg.startEA + (index * chunkSize))
-            
+
     def decode_printf(self, opcode):
         c = 0
         addr = self.cmd.ea
         while c != 0x8D:
             addr -= 1
             c = get_byte(addr)
-            
+
         val = get_word(addr + 1)
         self.cmd[0].type = o_imm
         self.cmd[0].dtyp = dt_byte
         self.cmd[0].value = self._read_cmd_byte()
-        
+
         self.cmd[5].value = val # abuse op 6 for printf... HACKY!
         return True
-        
+
     def decode_call(self, opcode):
         self.cmd[0].type = o_near
-        self.cmd[0].dtyp = dt_byte 
+        self.cmd[0].dtyp = dt_byte
         if get_byte(self.cmd.ea - 5) == 0x8A:
             self.cmd[0].addr = get_long(self.cmd.ea - 4) - 0x10
         self._read_cmd_byte()
         return True
-        
+
     def decode_sys(self, opcode):
         self.cmd[0].type = o_imm
         self.cmd[0].dtyp = dt_byte
@@ -311,13 +311,13 @@ class MSCSBProcessor(processor_t):
         self.cmd[1].dtyp = dt_byte
         self.cmd[1].value = self._read_cmd_byte()
         return True
-    
+
     def decode_conversion(self, opcode):
         self.cmd[0].type = o_imm
         self.cmd[0].dtyp = dt_byte
         self.cmd[0].value = self._read_cmd_byte()
         return True
-  
+
     def decode_no_ops(self, opcode):
         return True
 
@@ -328,7 +328,7 @@ class MSCSBProcessor(processor_t):
     def notify_init(self, idp_file):
         cvar.inf.mf = True # Tell IDA it's big endian data
         return True
-        
+
     def notify_get_autocmt(self):
         """
         Get instruction comment. 'cmd' describes the instruction in question
@@ -340,13 +340,13 @@ class MSCSBProcessor(processor_t):
     def notify_endbinary(self, ok):
         if ok:
             print FINISHED_MESSAGE
-            
+
     def ana(self):
         cmd = self.cmd
-        
+
         # take opcode byte
         b = self._read_cmd_byte()
-        
+
         # clear push bit
         opcode = b & 0x7F
         cmd.auxpref = b >> 7 # pushes to MSC stack?
@@ -357,16 +357,16 @@ class MSCSBProcessor(processor_t):
             self.cmd.itype = getattr(self, 'itype_' + ins.name)
         except:
             return 0
-        
+
         # call the decoder
         if ins.d is None:
             return 0
-        
+
         ins.d(opcode)
-        
+
         return self.cmd.size
 
-    def emu(self): 
+    def emu(self):
         for i in xrange(6):
             if cmd[i].type == o_void:
                 break
@@ -377,10 +377,10 @@ class MSCSBProcessor(processor_t):
                 else:
                     fl = fl_JN
                 ua_add_cref(0, self.cmd[i].addr, fl)
-    
+
         if not self.cmd.get_canon_feature() & CF_STOP:  # add a link to next instr if code continues
             ua_add_cref(0, self.cmd.ea + self.cmd.size, fl_F)
-    
+
         return True
 
     def outop(self, op):
@@ -407,7 +407,7 @@ class MSCSBProcessor(processor_t):
             OutLine('-> ')
         else:
             OutLine('   ') # make sure things are pretty still
-            
+
         OutMnem(15)  # max width = 15
 
         for i in xrange(0, 6):

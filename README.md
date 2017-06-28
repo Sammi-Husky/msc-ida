@@ -1,7 +1,7 @@
 # msc-ida
 IDA Processor Module and Loader for Smash 4 MotionScript Binary files (.mscsb)
 
-I've created this module and licensed it under MIT in the hopes that the community will be able to make use of it in order to unlock the power of the MotionScript engine. 
+I've created this module and licensed it under MIT in the hopes that the community will be able to make use of it in order to unlock the power of the MotionScript engine.
 
 # Requirements
 
@@ -14,8 +14,8 @@ Copy mscsb.py to the /procs directory in your IDA installation folder, and mscsb
 
 # Authors
  * Sammi Husky [sammi-husky@live.com]
- * Jam1Garner
- 
+ * jam1garner
+
 See AUTHORS for more details.
 
 # License
