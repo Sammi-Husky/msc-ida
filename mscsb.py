@@ -1,5 +1,4 @@
 from idaapi import *
-import os.path
 
 FINISHED_MESSAGE = """\
 MotionScript processor for IDA
