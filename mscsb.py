@@ -59,20 +59,6 @@ class MSCSBProcessor(processor_t):
         "a_sizeof_fmt": "size %s",
     }
 
-    regNames = ["$%s" % n for n in [
-        "GV0","GV1","GV2","GV3","GV4","GV5",
-        "GV6","GV7","GV8","GV9","GV10","GV11",
-        "GV12","GV13","GV14","GV15","GV16","GV17",
-        "GV18","GV19","GV20","GV21","GV22","GV23",
-        "GV24","GV25","GV26","GV27","GV28","GV29",
-        "GV30","GV31","GV32","GV33","GV34","GV35",
-        "GV36","GV37","GV38","GV39","GV40","GV41",
-        "GV42","GV43","GV44","GV45","GV46","GV47",
-        "GV48","GV49","GV50","GV51","GV52","GV53",
-        "GV54","GV55","GV56","GV57","GV58","GV59",
-        "GV60","GV61", "CS", "DS"
-    ]]
-
     def __init__(self):
         processor_t.__init__(self)
         self._init_instructions()
@@ -187,13 +173,31 @@ class MSCSBProcessor(processor_t):
         self.instruc = Instructions
 
     def _init_registers(self):
-        self.reg_ids = {}
-        for i, reg in enumerate(self.regNames):
-            self.reg_ids[reg] = i
+    
+        self.regNames = [
+        "GV0","GV1","GV2","GV3","GV4","GV5",
+        "GV6","GV7","GV8","GV9","GV10","GV11",
+        "GV12","GV13","GV14","GV15","GV16","GV17",
+        "GV18","GV19","GV20","GV21","GV22","GV23",
+        "GV24","GV25","GV26","GV27","GV28","GV29",
+        "GV30","GV31","GV32","GV33","GV34","GV35",
+        "GV36","GV37","GV38","GV39","GV40","GV41",
+        "GV42","GV43","GV44","GV45","GV46","GV47",
+        "GV48","GV49","GV50","GV51","GV52","GV53",
+        "GV54","GV55","GV56","GV57","GV58","GV59",
+        "GV60","GV61",
+        
+        # Fake seg registes
+        "CS", "DS"
+        ]
+        for i in xrange(len(self.regNames)):
+            setattr(self, 'ireg_' + self.regNames[i], i)
 
-        # IDA needs these so lets fake it...
-        self.regFirstSreg = self.regCodeSreg = self.reg_ids["$CS"]
-        self.regLastSreg = self.regDataSreg = self.reg_ids["$DS"]
+        # IDA needs these so fake them
+        self.regFirstSreg = self.ireg_CS
+        self.regLastSreg  = self.ireg_DS
+        self.regCodeSreg = self.ireg_CS
+        self.regDataSreg = self.ireg_DS
  
     #----------------------------------------------------------------#
     #---------------- Opcode Decoders -------------------------------#
