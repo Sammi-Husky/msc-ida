@@ -84,7 +84,7 @@ class MSCSBProcessor(processor_t):
             0x08: insr(name="return_8",                cf=None,                 d=self.decode_no_ops,           cmt= None),
             0x09: insr(name="return_9",                cf=None,                 d=self.decode_no_ops,           cmt= None),
             0x0a: insr(name="pushInt",                 cf=CF_USE1,              d=self.decode_push,             cmt= None),
-            0x0b: insr(name="pushReg",                 cf=CF_USE1,              d=self.decode_push,             cmt= None),
+            0x0b: insr(name="pushReg",                 cf=CF_USE1,              d=self.decode_push,             cmt= self.cmt_var),
             0x0d: insr(name="pushShort",               cf=CF_USE1,              d=self.decode_push,             cmt= None),
             0x0e: insr(name="addi",                    cf=None,                 d=self.decode_no_ops,           cmt= None),
             0x0f: insr(name="subi",                    cf=None,                 d=self.decode_no_ops,           cmt= None),
@@ -92,23 +92,23 @@ class MSCSBProcessor(processor_t):
             0x11: insr(name="divi",                    cf=None,                 d=self.decode_no_ops,           cmt= None),
             0x12: insr(name="modi",                    cf=None,                 d=self.decode_no_ops,           cmt= None),
             0x13: insr(name="negi",                    cf=None,                 d=self.decode_no_ops,           cmt= None),
-            0x14: insr(name="i++",                     cf=None,                 d=self.decode_reg,              cmt= lambda: "i++"),
-            0x15: insr(name="i--",                     cf=None,                 d=self.decode_reg,              cmt= lambda: "i--"),
+            0x14: insr(name="i++",                     cf=None,                 d=self.decode_reg,              cmt= lambda: self.cmt_var()+"++"),
+            0x15: insr(name="i--",                     cf=None,                 d=self.decode_reg,              cmt= lambda: self.cmt_var()+"--"),
             0x16: insr(name="BitwiseAnd",              cf=None,                 d=self.decode_no_ops,           cmt= None),
             0x17: insr(name="BitwiseOr",               cf=None,                 d=self.decode_no_ops,           cmt= None),
             0x18: insr(name="BitwiseNot",              cf=None,                 d=self.decode_no_ops,           cmt= None),
             0x19: insr(name="BitwiseXor",              cf=None,                 d=self.decode_no_ops,           cmt= None),
             0x1a: insr(name="leftShift",               cf=CF_SHFT,              d=self.decode_no_ops,           cmt= None),
             0x1b: insr(name="rightShift",              cf=CF_SHFT,              d=self.decode_no_ops,           cmt= None),
-            0x1c: insr(name="setVar",                  cf=CF_USE1,              d=self.decode_set,              cmt= None),
-            0x1d: insr(name="i+=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: "+="),
-            0x1e: insr(name="i-=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: "-="),
-            0x1f: insr(name="i*=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: "*="),
-            0x20: insr(name="i/=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: "/="),
-            0x21: insr(name="i%=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: "%="),
-            0x22: insr(name="i&=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: "&="),
-            0x23: insr(name="i|=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: "|="),
-            0x24: insr(name="i^=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: "^="),
+            0x1c: insr(name="setVar",                  cf=CF_USE1,              d=self.decode_set,              cmt= self.cmt_var),
+            0x1d: insr(name="i+=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: self.cmt_var()+"+="),
+            0x1e: insr(name="i-=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: self.cmt_var()+"-="),
+            0x1f: insr(name="i*=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: self.cmt_var()+"*="),
+            0x20: insr(name="i/=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: self.cmt_var()+"/="),
+            0x21: insr(name="i%=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: self.cmt_var()+"%="),
+            0x22: insr(name="i&=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: self.cmt_var()+"&="),
+            0x23: insr(name="i|=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: self.cmt_var()+"|="),
+            0x24: insr(name="i^=",                     cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: self.cmt_var()+"^="),
             0x25: insr(name="equals",                  cf=None,                 d=self.decode_no_ops,           cmt= lambda: "=="),
             0x26: insr(name="notEqual",                cf=None,                 d=self.decode_no_ops,           cmt= lambda: "!="),
             0x27: insr(name="lessThan",                cf=None,                 d=self.decode_no_ops,           cmt= lambda: "<"),
@@ -135,13 +135,13 @@ class MSCSBProcessor(processor_t):
             0x3c: insr(name="multf",                   cf=None,                 d=self.decode_no_ops,           cmt= None),
             0x3d: insr(name="divf",                    cf=None,                 d=self.decode_no_ops,           cmt= None),
             0x3e: insr(name="negf",                    cf=None,                 d=self.decode_no_ops,           cmt= None),
-            0x3f: insr(name="f++",                     cf=None,                 d=self.decode_reg,              cmt= lambda: "f++"),
-            0x40: insr(name="f--",                     cf=None,                 d=self.decode_reg,              cmt= lambda: "f--"),
-            0x41: insr(name="floatVarSet",             cf=CF_USE1,              d=self.decode_set,              cmt= None),
-            0x42: insr(name="float+=",                 cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: "+="),
-            0x43: insr(name="float-=",                 cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: "-="),
-            0x44: insr(name="float*=",                 cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: "*="),
-            0x45: insr(name="float/=",                 cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: "/="),
+            0x3f: insr(name="f++",                     cf=None,                 d=self.decode_reg,              cmt= lambda: self.cmt_var()+"++"),
+            0x40: insr(name="f--",                     cf=None,                 d=self.decode_reg,              cmt= lambda: self.cmt_var()+"--"),
+            0x41: insr(name="floatVarSet",             cf=CF_USE1,              d=self.decode_set,              cmt= self.cmt_var),
+            0x42: insr(name="float+=",                 cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: self.cmt_var()+"+="),
+            0x43: insr(name="float-=",                 cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: self.cmt_var()+"-="),
+            0x44: insr(name="float*=",                 cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: self.cmt_var()+"*="),
+            0x45: insr(name="float/=",                 cf=CF_USE1,              d=self.decode_reg,              cmt= lambda: self.cmt_var()+"/="),
             0x46: insr(name="floatGreater",            cf=None,                 d=self.decode_no_ops,           cmt= lambda: ">"),
             0x47: insr(name="floatLessOrEqual",        cf=None,                 d=self.decode_no_ops,           cmt= lambda: "<="),
             0x48: insr(name="floatLess",               cf=None,                 d=self.decode_no_ops,           cmt= lambda: "<"),
@@ -280,6 +280,14 @@ class MSCSBProcessor(processor_t):
         index = cmd[5].value
         return GetString(seg.startEA + (index * chunkSize))
 
+    def cmt_var(self):
+        if self.cmd[0].type == o_imm:
+            return "LocalVar%i" % (cmd[0].value)
+        elif self.cmd[0].type == o_reg:
+            return "GlobalVar%i" % (cmd[0].reg)
+        else:
+            return None
+
     def decode_printf(self, opcode):
         c = 0
         addr = self.cmd.ea
@@ -387,7 +395,7 @@ class MSCSBProcessor(processor_t):
         if op.type == o_reg:
             out_register(self.regNames[op.reg])
         elif op.type == o_imm:
-            OutValue(op, OOFW_IMM)
+            OutValue(op, OOFW_32 | OOFW_IMM)
         elif op.type == o_near:
             ok = out_name_expr(op, op.addr, BADADDR)
             if not ok:
