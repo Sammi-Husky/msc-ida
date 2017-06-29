@@ -284,7 +284,7 @@ class MSCSBProcessor(processor_t):
         if self.cmd[0].type == o_imm:
             return "LocalVar%i" % (cmd[0].value)
         elif self.cmd[0].type == o_reg:
-            return "GlobalVar%i" % (cmd[0].value)
+            return "GlobalVar%i" % (cmd[0].reg)
         else:
             return None
 
