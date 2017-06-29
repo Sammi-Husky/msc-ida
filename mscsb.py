@@ -387,7 +387,7 @@ class MSCSBProcessor(processor_t):
         if op.type == o_reg:
             out_register(self.regNames[op.reg])
         elif op.type == o_imm:
-            OutValue(op, OOFW_IMM)
+            OutValue(op, OOFW_32 | OOFW_IMM)
         elif op.type == o_near:
             ok = out_name_expr(op, op.addr, BADADDR)
             if not ok:
