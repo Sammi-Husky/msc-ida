@@ -306,9 +306,16 @@ class MSCSBProcessor(processor_t):
     def decode_call(self, opcode):
         self.cmd[0].type = o_near
         self.cmd[0].dtyp = dt_byte
+        paramCount = self._read_cmd_byte()
         if get_byte(self.cmd.ea - 5) == 0x8A:
             self.cmd[0].addr = get_long(self.cmd.ea - 4) - 0x10
-        self._read_cmd_byte()
+            self.cmd[1].type = o_imm
+            self.cmd[1].dtyp = dt_byte
+            self.cmd[1].value = paramCount
+        else:
+            self.cmd[0].type = o_imm
+            self.cmd[0].value = paramCount
+
         return True
 
     def decode_sys(self, opcode):
